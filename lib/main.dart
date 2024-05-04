@@ -11,16 +11,41 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       initialRoute: '/',
-      routes: {
+      /*routes: {
         '/': (context) => const HomeScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/profile': (context) => const ProfileScreen(),
-      },
+      },*/
+      onGenerateRoute: _generateRoute,
     );
+  }
+
+  MaterialPageRoute? _generateRoute(RouteSettings settings) {
+    Widget? widget;
+    switch (settings.name) {
+      case HomeScreen.routeName:
+        widget = const HomeScreen();
+        break;
+      case SettingsScreen.routeName:
+        widget = const SettingsScreen();
+        break;
+      case ProfileScreen.routeName:
+        String userName = settings.arguments as String;
+        widget = ProfileScreen(userName: userName);
+        break;
+    }
+
+    if (widget != null) {
+      return MaterialPageRoute(builder: (context) => widget!);
+    }
+
+    return null;
   }
 }
 
 class HomeScreen extends StatelessWidget {
+  static const String routeName = '/';
+
   const HomeScreen({super.key});
 
   @override
@@ -34,25 +59,14 @@ class HomeScreen extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  '/profile',
-                  arguments: {
-                    'name': 'Tamal',
-                  },
-                );
+                Navigator.pushNamed(context, ProfileScreen.routeName,
+                    arguments: 'tamal');
               },
               child: const Text('Profile'),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  '/settings',
-                  arguments: {
-                    'name': 'Tamal',
-                  },
-                );
+                Navigator.pushNamed(context, SettingsScreen.routeName);
               },
               child: const Text('Settings'),
             )
@@ -64,13 +78,15 @@ class HomeScreen extends StatelessWidget {
 }
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  static const String routeName = '/profile';
+
+  const ProfileScreen({super.key, required this.userName});
+
+  final String userName;
 
   @override
   Widget build(BuildContext context) {
-    final arg =
-        ModalRoute.of(context)?.settings.arguments as Map<String, String>;
-    print(arg);
+    print(userName);
 
     return Scaffold(
       appBar: AppBar(
@@ -98,6 +114,8 @@ class ProfileScreen extends StatelessWidget {
 }
 
 class SettingsScreen extends StatelessWidget {
+  static const String routeName = '/settings';
+
   const SettingsScreen({super.key});
 
   @override
